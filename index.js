@@ -1,30 +1,28 @@
 // @flow
 
-import invariant from 'assert'
-import React, { type Element } from 'react'
+import React from 'react'
 
-export type Form<T> = (?T => void) => Element<any>
+export type Form<T> = (?T => void) => React$Element<any>
 
 type Props<S> = {
-  report: ?S => void,
   forms: $ObjMap<S, <T>(T) => Form<T>>,
   options?: Object,
+  report: ?S => void,
 }
 class Orthoform<Schema: { [string]: any }> extends React.Component<void, Props<Schema>, void> {
   states: $ObjMap<Schema, <T>(T) => ?T> = {}
 
   render() {
     const options = this.props.options
-    const namedForms = this.props.forms
     return <div className={options && options.className} style={options && options.style}>{
-      kvs(namedForms).map(([name, form]) => {
-        const element = form(this.update(name))
+      kvs(this.props.forms).map(([name, form]) => {
+        const element = form(this.report(name))
         return React.cloneElement(element, { key: name })
       })
     }</div>
   }
 
-  update = (name: string) => (state: any) => {
+  report = (name: string) => (state: any) => {
     this.states[name] = state
 
     let allUndefined = true
