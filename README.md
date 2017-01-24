@@ -32,5 +32,6 @@ const signup: Form<SignUp> = orthoform({
 
 ```.jsx
 map<T, U>(form: Form<T>, f: T => U): Form<U>
-optional<T>(form: Form<T>): Form<{ value: ?T }>
+optional<T>(form: Form<T>): Form<T | void>
+maybe<T>(form: Form<T>): Form<?T>
 ```
