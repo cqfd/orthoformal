@@ -2,15 +2,29 @@
 
 import React from 'react'
 
-export type Form<T> = (?T => void) => React$Element<any>
+export type Form<+T> = (Status<T> => void) => React$Element<*>
+
+export type Status<+T> = Fresh | Bogus | Ok<T>
+type Fresh = { t: 'fresh' }
+type Bogus = { t: 'bogus' }
+type Ok<+T> = { t: 'ok', value: T }
+
+const fresh: Fresh = { t: 'fresh' }
+const bogus: Bogus = { t: 'bogus' }
+function ok<T>(value: T): Ok<T> {
+  return { t: 'ok', value: value }
+}
 
 type Props<S> = {
   forms: $ObjMap<S, <T>(T) => Form<T>>,
-  options?: Object,
-  report: ?S => void,
+  options?: {
+    className?: string,
+    style?: Object
+  },
+  report: Status<S> => void,
 }
-class Orthoform<Schema: { [string]: any }> extends React.Component<void, Props<Schema>, void> {
-  states: $ObjMap<Schema, <T>(T) => ?T> = {}
+class Orthoform<Schema: { [string]: mixed }> extends React.Component<void, Props<Schema>, void> {
+  states: $ObjMap<Schema, <T>(T) => Status<T>> = {}
 
   render() {
     const options = this.props.options
@@ -22,36 +36,34 @@ class Orthoform<Schema: { [string]: any }> extends React.Component<void, Props<S
     }</div>
   }
 
-  report = (name: string) => (state: any) => {
-    this.states[name] = state
+  report = (name: string) => (status: mixed) => {
+    this.states[name] = status
 
-    let allUndefined = true
-    let anyUndefined = false
-    let anyNull = false
-    const okStates: any = {}
+    let allFresh = true
+    let unfinished = false
+    const okValues: any = {}
     for (const name in this.props.forms) {
-      const state = this.states[name]
-      if (state === undefined) {
-        anyUndefined = true
-        continue
-      } else if (state === null) {
-        allUndefined = false
-        anyNull = true
-      } else {
-        allUndefined = false
-        okStates[name] = state
+      const status = this.states[name]
+      if (status === undefined) {
+        unfinished = true
+        return
+      }
+      switch ( status.t ) {
+        case 'fresh':
+          unfinished = true
+          continue
+        case 'bogus':
+          this.props.report(bogus)
+          return
+        default:
+          allFresh = false
+          okValues[name] = status.value
       }
     }
 
-    if (anyNull) {
-      this.props.report(null)
-    } else if (allUndefined) {
-      this.props.report(undefined)
-    } else if (anyUndefined) {
-      this.props.report(null)
-    } else {
-      this.props.report(okStates)
-    }
+    if (allFresh) this.props.report(fresh)
+    else if (unfinished) this.props.report(bogus)
+    else this.props.report(ok(okValues))
   }
 }
 
@@ -60,11 +72,33 @@ export default function form<Forms: { [string]: Form<any> }>(forms: Forms, optio
 }
 
 export function map<A, B>(form: Form<A>, f: A => B): Form<B> {
-  return report => form(a => (a == null) ? report(a) : report(f(a)))
+  return report => form(status => {
+    switch (status.t) {
+      case 'fresh': report(fresh); return
+      case 'bogus': report(bogus); return
+      default: report(ok(f(status.value))); return
+    }
+  })
 }
 
-export function optional<A>(form: Form<A>): Form<{ value: A | void }> {
-  return report => form(a => a === null ? report(a) : report({ value: a }))
+export function optional<A>(form: Form<A>): Form<A | void> {
+  return report => form(status => {
+    switch (status.t) {
+      case 'fresh': report(ok(undefined)); return
+      case 'bogus': report(bogus); return
+      default: report(ok(status.value)); return
+    }
+  })
+}
+
+export function maybe<A>(form: Form<A>): Form<?A> {
+  return report => form(status => {
+    switch (status.t) {
+      case 'fresh': report(ok(undefined)); return
+      case 'bogus': report(ok(null)); return
+      default: report(ok(status.value)); return
+    }
+  })
 }
 
 function kvs(map) {
