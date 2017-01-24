@@ -9,7 +9,7 @@ Given a few orthoforms, say a `hasReadUserAgreement: Form<bool>` and a `credenti
 ```.jsx
 // @flow
 
-import orthoform from './index.js'
+import { object, type Form } from './index.js'
 
 type Credentials = { email: string, password: string }
 const credentials: Form<Credentials> = ...
@@ -21,7 +21,7 @@ type SignUp = {
   hasReadUserAgreement: bool,
 }
 
-const signup: Form<SignUp> = orthoform({
+const signup: Form<SignUp> = object({
   credentials: credentials,
   hasReadUserAgreement: hasReadUserAgreement,
 })
