@@ -35,7 +35,7 @@ export default class Ortharray<Schema: Array<mixed>> extends React.Component<voi
         unfinished = true
         return
       }
-      switch ( status.t ) {
+      switch (status.t) {
         case 'fresh':
           unfinished = true
           continue
