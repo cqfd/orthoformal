@@ -1,7 +1,6 @@
 // @flow
 
 import React from 'react'
-import _ from 'lodash'
 import { pure, fresh, emptied } from '../status'
 import { type Form } from '../index'
 

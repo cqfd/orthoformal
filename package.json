@@ -4,8 +4,7 @@
     "mocha": "mocha-webpack --webpack-config examples/webpack.config.js \"**/*.tests.js\""
   },
   "dependencies": {
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react": "^15.4.2"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.0",
@@ -18,11 +17,11 @@
     "css-loader": "^0.26.1",
     "flow-bin": "^0.38.0",
     "flow-typed": "^2.0.0",
-    "lodash": "^4.17.4",
     "mocha": "^3.2.0",
     "mocha-webpack": "next",
     "node-sass": "^4.5.0",
     "postcss-loader": "^1.2.2",
+    "react-dom": "^15.4.2",
     "sass-loader": "^4.1.1",
     "style-loader": "^0.13.1",
     "webpack": "2.2.1",
