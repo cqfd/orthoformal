@@ -4,24 +4,24 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import TextInput from './text_input'
+import Checkbox from './checkbox'
 
 import * as orthoformal from '../index'
-import { type Form } from '../index'
+import { type Form, array, object, map, filter } from '../index'
 
-const example = TextInput.form('example: ')
-const number = orthoformal.map(example, parseInt)
-const age: Form<number> = orthoformal.filter(number, n => !isNaN(n))
+const number = map(TextInput.form('age: '), parseInt)
+const age = filter(number, n => !isNaN(n))
 
-const form: Form<{ name: string, age: number, interests: [string, string] }> = orthoformal.object({
+const form = object({
   name: TextInput.form('name: '),
+  email: TextInput.form('email: '),
   age: age,
-  interests: orthoformal.array([TextInput.form('interest: '), TextInput.form('interest: ')])
+  hasReadTerms: filter(Checkbox.form("Have you read the terms?", false), checked => checked)
 })
 
 ReactDOM.render(
-  form.render(s => console.log(s)),
+  object({
+    firstLogin: form,
+    secondLogin: form
+  }).render(s => console.log(s)),
   document.getElementById('root'))
-
-function repeat<T>(n: number, t: T): Array<T> {
-  return Array(n).fill(t)
-}
