@@ -4,10 +4,6 @@ import { both, array, object, pure, fresh, bogus, emptied } from './status'
 
 describe('Status<T>', () => {
 
-  it('works asynchonously', () => {
-    return sleep(1234).then(() => assert.equal(1, 1))
-  })
-
   it('works with arrays', () => {
     assert.deepEqual(array([pure(123)]), pure([123]))
     assert.deepEqual(array([pure(123), pure('foo')]), pure([123, 'foo']))
@@ -63,7 +59,3 @@ describe('Status<T>', () => {
 
 
 })
-
-function sleep(ms) {
-  return new Promise(awaken => setTimeout(awaken, ms))
-}
