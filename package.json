@@ -1,13 +1,20 @@
 {
+  "name": "orthoformal",
+  "version": "0.0.0",
+  "author": "Alan O'Donnell <alan.m.odonnell@gmail.com>",
+  "main": "dist",
   "scripts": {
     "dev": "webpack-dev-server --config examples/webpack.config.js",
-    "mocha": "mocha-webpack --webpack-config examples/webpack.config.js \"**/*.tests.js\""
+    "mocha": "mocha-webpack --webpack-config examples/webpack.config.js \"**/*.tests.js\"",
+    "dist": "webpack && cp index.js dist/index.js.flow && cp status.js dist/status.js.flow",
+    "prepublish": "npm run dist"
   },
-  "dependencies": {
+  "peerDependencies": {
     "react": "^15.4.2"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.0",
+    "babel-cli": "^6.23.0",
     "babel-core": "^6.22.1",
     "babel-loader": "^6.2.10",
     "babel-polyfill": "^6.22.0",
@@ -21,6 +28,7 @@
     "mocha-webpack": "next",
     "node-sass": "^4.5.0",
     "postcss-loader": "^1.2.2",
+    "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "sass-loader": "^4.1.1",
     "style-loader": "^0.13.1",
